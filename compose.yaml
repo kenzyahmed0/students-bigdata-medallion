@@ -1,0 +1,103 @@
+services:
+  # ---------- Spark Master ----------
+  spark:
+    image: mohamedhamed13/spark:3.5.0
+    container_name: spark
+    environment:
+      SPARK_MODE: master
+    ports:
+      - "7077:7077"
+      - "8080:8080"
+    volumes:
+      - ./shared:/data
+
+  spark-worker:
+    image: mohamedhamed13/spark:3.5.0
+    container_name: spark-worker
+    depends_on:
+      - spark
+    environment:
+      SPARK_MODE: worker
+      SPARK_MASTER_URL: spark://spark:7077
+    ports:
+      - "8081:8081"
+    volumes:
+      - ./shared:/data
+
+  jupyter:
+    image: jupyter/pyspark-notebook:spark-3.5.0
+    container_name: jupyter
+    ports:
+      - "8888:8888"
+    environment:
+      PYSPARK_PYTHON: python3
+    volumes:
+      - ./shared:/data
+    depends_on:
+      - spark
+    command: start-notebook.sh --IdentityProvider.token=''
+
+
+  namenode:
+    image: bde2020/hadoop-namenode:2.0.0-hadoop3.2.1-java8
+    container_name: namenode
+    hostname: namenode
+    restart: unless-stopped
+    environment:
+      CLUSTER_NAME: local-hadoop
+      CORE_CONF_fs_defaultFS: "hdfs://namenode:9000"
+      HDFS_CONF_dfs_webhdfs_enabled: "true"
+    ports:
+      - "9870:9870"
+      - "9000:9000"
+    volumes:
+      - hdfs-namenode:/hadoop/dfs/name
+      - ./shared:/data
+
+  datanode:
+    image: bde2020/hadoop-datanode:2.0.0-hadoop3.2.1-java8
+    container_name: datanode
+    hostname: datanode
+    restart: unless-stopped
+    environment:
+      CLUSTER_NAME: local-hadoop
+      CORE_CONF_fs_defaultFS: "hdfs://namenode:9000"
+      HDFS_CONF_dfs_webhdfs_enabled: "true"
+      HDFS_CONF_dfs_datanode_hostname: datanode
+      HDFS_CONF_dfs_datanode_http_address: "0.0.0.0:9864"
+    ports:
+      - "9864:9864"
+    volumes:
+      - hdfs-datanode:/hadoop/dfs/data
+    depends_on:
+      - namenode
+
+
+   mysql:
+    image: mysql:8.0.29
+    container_name: mysql_db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?Set MYSQL_ROOT_PASSWORD in .env}
+      MYSQL_DATABASE: school
+      MYSQL_USER: depi
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:?Set MYSQL_PASSWORD in .env}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb_db
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+volumes:
+  hdfs-namenode:
+  hdfs-datanode:
+  mysql_data:
+  mongo_data:
