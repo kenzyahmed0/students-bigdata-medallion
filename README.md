@@ -113,13 +113,11 @@ SELECT * FROM gold.department_summary ORDER BY avg_grade DESC
 
 ## Screenshots
 
-> Save each screenshot in the `images/` folder with the file name shown below.
+### 1. Running Containers
 
-### 1. Running containers
+![Docker containers](images/01_docker_ps.png.png)
 
-![Docker containers](images/01_docker_ps.png)
-
-### 2. HDFS NameNode UI (`http://localhost:9870`)
+### 2. HDFS NameNode UI
 
 Overview page:
 
@@ -129,11 +127,11 @@ Utilities → Browse the file system → `/lakehouse` (bronze, silver, gold):
 
 ![HDFS lakehouse folders](images/03_hdfs_lakehouse.png)
 
-### 3. Spark Master UI (`http://localhost:8080`)
+### 3. Spark Master UI
 
-![Spark UI](images/04_spark_ui.png)
+![Spark UI](images/04_spark_ui.png.png)
 
-### 4. Notebook output
+### 4. Notebook Output
 
 Data read from MongoDB:
 
@@ -145,21 +143,11 @@ Gold tables:
 
 ### 5. DBeaver
 
-Connection to Hive:
+### 5. DBeaver — Gold Table Output
 
-![DBeaver connection](images/07_dbeaver_connection.png)
+The final Gold table results viewed in DBeaver:
 
-Database navigator (bronze, silver, gold schemas and tables):
-
-![DBeaver schemas](images/08_dbeaver_schemas.png)
-
-Query results:
-
-![Bronze query](images/09_dbeaver_bronze.png)
-
-![Silver query](images/10_dbeaver_silver.png)
-
-![Gold query](images/11_dbeaver_gold.png)
+![Gold table output in DBeaver](images/07_dbeaver_schemas.png)
 
 ## Notes
 
